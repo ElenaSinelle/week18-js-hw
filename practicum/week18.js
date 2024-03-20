@@ -311,39 +311,50 @@ document.querySelector('.b-17').addEventListener('click', showSix);
 //Создайте функцию clearLocalStorage, которая очищает весь Local Storage. Вызывается функция по кнопке Задание 18.
 
 const clearLocalStorage = () => {
-	//Ваш код
+	localStorage.clear();
 	console.log('Local Storage очищен.');
 };
 
-//добавьте слушатель события
+document.querySelector('.b-18').addEventListener('click', clearLocalStorage);
+
+//----------------------------------------------------------------
 
 //Задание 19
 //Cоздана форма с одним поле ввода, в которое пользователь может вводить только числа. Создайте массив numbers. Когда пользователь нажимает кнопке Задание 19 число должно добавляться в массив. Массив должен сохраняться в Local Storage с ключем task19. Вызывается функция по кнопке Задание 19. Что произойдёт, если нажать на кнопке трижды?
-
+//- добавится 3 одинковых числа в массив и в locsl storage
 let numbers = [];
 
 const addToNumbers = () => {
 	const numberInput = document.getElementById('numberInput');
 	const number = parseInt(numberInput.value);
-
-	//Ваш код
+  numbers.push(number);
 };
 
-document.querySelector('.b-19').addEventListener('click', addToNumbers);
+document.querySelector('.b-19').addEventListener('click', function() {
+  addToNumbers();
+  localStorage.setItem('task19', JSON.stringify(numbers));
+});
+
+//----------------------------------------------------------------
 
 //Задание 20
 //Создайте функцию removeLastElement, которая при вызове удаляет из массива numbers последний элемент. После чего массив сохраняется в Local Storage с ключем task19 (используйте массив из задания 19). Вызывается функция по кнопке Задание 20.
 
 const removeLastElement = () => {
 	if (numbers.length > 0) {
-		//Ваш код
+		numbers.pop();
 		console.log('Последний элемент удален из массива numbers и сохранен в Local Storage.');
 	} else {
 		console.log('Массив numbers пуст.');
 	}
 };
 
-//добавьте слушатель события
+document.querySelector('.b-20').addEventListener('click', function() {
+  removeLastElement();
+  localStorage.setItem('task19', JSON.stringify(numbers));
+});
+
+//----------------------------------------------------------------
 
 //Задание 21
 //Создайте функцию addToCart, которая при нажатии кнопки Задание 21 получает из Local Storage сохранённый массив cartItems. Затем добавляет новый элемент в массив, представляющий товар, введённый вами в поле ввода. Массив cartItems должен сохраняться в Local Storage с ключом task21. Вызывается функция по кнопке Задание 21.
@@ -353,12 +364,11 @@ const addToCart = () => {
 	const productInput = document.getElementById('productInput');
 	const product = productInput.value;
 
-	if (product.trim() !== '') {
-		let cartItems = LocalStorage.getItem('cartItems');
-		cartItems = cartItems ? JSON.parse(cartItems) : []; //код из подсказки
-
-		//Ваш код
-
+  if (product.trim() !== '') {
+		let cartItems = localStorage.getItem('cartItems')
+    cartItems = cartItems ? JSON.parse(cartItems) : [];
+		cartItems.push(product);
+    localStorage.setItem('cartItems', JSON.stringify(cartItems));
 		console.log(`Товар "${product}" добавлен в корзину и сохранен в Local Storage.`);
 	} else {
 		console.log('Введите название товара.');
@@ -367,103 +377,167 @@ const addToCart = () => {
 
 document.querySelector('.b-21').addEventListener('click', addToCart);
 
+//----------------------------------------------------------------
+
 //Задание 22
 //Создайте функцию removeFromCart, которая при нажатии кнопки Задание 22 получает из Local Storage сохранённый массив cartItems. Затем удаляет последний элемент из массива. Массив cartItems должен сохраняться в Local Storage с ключом cartItems. Вызывается функция по кнопке Задание 22.
 //Подсказка: необходимо проверить, существует ли значение и не является ли оно пустым. Это может вызвать ошибку, если cartItems не существует в Local Storage или является пустым.
 
 const removeFromCart = () => {
-	//Ваш код
+	let cartItems = localStorage.getItem('cartItems');
+  if (cartItems && JSON.parse(cartItems).length !== 0) {
+    cartItems = JSON.parse(cartItems);
+    cartItems.pop();
+    localStorage.setItem('cartItems', JSON.stringify(cartItems));
+  } else {
+    console.log('Корзина пуста, в local storage нет массива cartItems');
+  }
 };
 
 document.querySelector('.b-22').addEventListener('click', removeFromCart);
+
+//----------------------------------------------------------------
 
 //Задание 23
 //Создайте функцию showCart, которая при нажатии кнопки Задание 23 получает из Local Storage сохранённый массив cartItems. Выведите элементы массива в элемент с классом practicum23. Вызывается функция по кнопке Задание 23.
 
 const showCart = () => {
-	//Ваш код
+  const resultElement = document.querySelector('.practicum23');
+	let cartItems = localStorage.getItem('cartItems');
+  if (cartItems && JSON.parse(cartItems).length !== 0) {
+    resultElement.textContent = JSON.parse(cartItems).join(', ');
+  } else {
+    resultElement.textContent = 'Корзина пуста, в local storage нет массива cartItems';
+  }
 };
 
 document.querySelector('.b-23').addEventListener('click', showCart);
+
+//----------------------------------------------------------------
 
 //Задание 24
 //Создайте функцию updateCartCount, которая при нажатии кнопки Задание 24 обновляет количество товаров в корзине. Получите из Local Storage сохранённый массив cartItems и выведите количество товаров в элемент с классом practicum24 (например: "Количество товаров в корзине 3"). Вызывается функция по кнопке Задание 24.
 
 const updateCartCount = () => {
-	//Ваш код
+	const resultElement = document.querySelector('.practicum24');
+  let cartItems = localStorage.getItem('cartItems');
+  if(cartItems) {
+    resultElement.textContent = `Количество товаров в корзине: ${JSON.parse(cartItems).length}`;
+  } else {
+    resultElement.textContent = 'Ваша корзина ещё не создана, в local storage нет массива cartItems';
+  }
 };
 
 document.querySelector('.b-24').addEventListener('click', updateCartCount);
+
+//----------------------------------------------------------------
 
 //Задание 25
 //Создайте функцию clearCart, которая при нажатии кнопки Задание 25 очищает весь массив cartItems в Local Storage. Вызывается функция по кнопке Задание 25.
 
 const clearCart = () => {
-	//Ваш код
+	// localStorage.removeItem('cartItems'); //если нужно вообще удалить запись cartItems из Local Storage
+  let cartItems = [];
+  localStorage.setItem('cartItems', JSON.stringify(cartItems)); //если нужно записать в cartItems в Local Storage пустой массив
 	console.log('Корзина очищена.');
 };
 
 document.querySelector('.b-25').addEventListener('click', clearCart);
 
+//----------------------------------------------------------------
+
 //Задание 26
 //При загрузке страницы установите cookie с именем "username" и значением "Кот Учёный". Выведите сообщение в консоль, подтверждающее успешное создание cookie.
 
-//Ваш код
-console.log("Cookie 'username' установлен.");
+document.addEventListener('DOMContentLoaded', function() {
+  document.cookie = 'username=Кот Учёный';
+  console.log(`Cookie 'username' установлен: ${document.cookie}`);
+  document.cookie = 'age=35';
+  console.log(`Cookie 'username' установлен: ${document.cookie}`);
+});
+
+//----------------------------------------------------------------
 
 //Задание 27
 //Допишите функцию getCookie, которая принимает имя cookie. Функция должна получать значение cookie с указанным именем, возвращать его и записывать в элемент с классом practicum27. Если cookie с указанным именем не найден, функция должна возвращать пустую строку. Вызывается функция по кнопке Задание 27. Выведите куку с именем "username".
 
 const getCookie = (name) => {
-	const cookieContainer = document.querySelector('.practicum27');
 	const cookies = document.cookie.split('; ');
-	for (let i = 0; i < cookies.length; i++) {
-		const cookie = cookies[i].split('=');
-		if (cookie[0] === name) {
-			const value = cookie[1] || '';
-			//Ваш код
-		}
-	}
-	//Ваш код
+  let result = cookies.filter(elem => elem.split('=')[0] === name);
+  return result.length !== 0 ? result[0].split('=')[1] : '';
+
+  // код из примера
+	// for (let i = 0; i < cookies.length; i++) {
+	// 	const cookie = cookies[i].split('=');
+	// 	if (cookie[0] === name) {
+	// 		const value = cookie[1] || '';
+	// 	}
+	// }
+};
+
+const writeCookie = (name) => {
+  const cookieContainer = document.querySelector('.practicum27');
+  cookieContainer.textContent = getCookie(name) ? `Значение куки ${name} - ${getCookie(name)}` : '';
 };
 
 document.querySelector('.b-27').addEventListener('click', () => {
 	getCookie('username');
-});
+  writeCookie('username');
+
+  // проверочки
+  // getCookie('age');
+  // writeCookie('age');
+
+  // getCookie('papa');
+  // writeCookie('papa');
+ });
+
+//----------------------------------------------------------------
 
 //Задание 28
 //Создайте функцию checkCookie, которая будет проверять, существует ли cookie с именем "username". Если cookie существует, выведите его значение в консоль. В противном случае выведите сообщение "Cookie с именем 'username' не найден." Вызывается функция по кнопке Задание 28.
 //Подсказка: используйте функцию getCookie
 
-const checkCookie = () => {
-	//Ваш код
-	if (username !== '') {
-		//Ваш код
-	} else {
-		//Ваш код
-	}
+//Чтобы проверять наличие куки с каким-либо именем, нужно написать функцию, которая принимает это имя, так и сделаем
+
+const checkCookie = (name) => {
+  if (getCookie(name)) {
+    console.log(`Значение куки ${name} - ${getCookie(name)}`);
+  } else {
+    console.log(`Куки с именем ${name} не найден`);
+  }
 };
 
-// добавьте слушатель события
+document.querySelector('.b-28').addEventListener('click', () => {
+	checkCookie('username');
+
+  // проверочки
+  // checkCookie('age');
+  // checkCookie('papa');
+});
+
+//----------------------------------------------------------------
 
 //Задание 29
 //Создайте функцию setCookie, которая принимает имя и значение cookie. Функция должна устанавливать cookie с указанным именем и значением. После установки cookie, выведите сообщение в консоль. Вызывается функция по кнопке Задание 29.
 
 const setCookie = (name, value) => {
 	document.cookie = `${name}=${value}`;
-	//Ваш код
+	console.log(`Куки ${name} установлена со значением ${value}`);
 };
 
 document.querySelector('.b-29').addEventListener('click', () => {
 	setCookie('testCookie', 'Hello');
 });
 
+//----------------------------------------------------------------
+
 //Задание 30
 //Создайте функцию deleteCookie, которая принимает имя cookie. Функция должна удалять cookie с указанным именем. После удаления cookie, выведите сообщение в консоль. Вызывается функция по кнопке Задание 30.
 
 const deleteCookie = (name) => {
 	document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
-	//Ваш код
+	console.log(`Куки ${name} удалена`);
 };
 
 document.querySelector('.b-30').addEventListener('click', () => {

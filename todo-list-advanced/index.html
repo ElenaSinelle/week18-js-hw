@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
+		<title>TODO List</title>
+		<link rel="stylesheet" href="style/normalize.css">
+    <link rel="stylesheet" href="style/style.css">
+	</head>
+	<body>
+    <section class="todo-list">
+      <h1 class="todo-list__title">TODO List</h1>
+
+      <div class="todo-list__input-container">
+        <input name="task-input" type="text" class="todo-list__input" placeholder="What are your plans?">
+        <button type="button" class="button todo-list__button">Add to list</button>
+      </div>
+
+      <h3>Your plans are:</h3>
+
+      <ul class="todo-list__list">
+        <!-- <li class="todo-list__item"><input type="checkbox" name="task" class="todo-list__chbox"><label class="todo-list__chbox-label"></label></li> -->
+      </ul>
+
+      <button type="button" class="button todo-list__clear">Clear all tasks</button>
+
+      <div class="todo-list__no-tasks-message">You have no tasks yet</div>
+
+      <p class="todo-list__result"></p>
+    </section>
+
+		<script src="script.js"></script>
+	</body>
+</html>

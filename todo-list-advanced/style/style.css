@@ -37,16 +37,8 @@ body {
   gap: 0.8rem;
   align-items: center;
 }
-.todo-list__item.done {
-  text-decoration: line-through;
-  color: rgb(109, 122, 126);
-}
 .todo-list__no-tasks-message {
   color: rgb(120, 124, 125);
-}
-
-.invalid {
-  box-shadow: 0 0 0.1rem 0.15rem rgb(240, 20, 170);
 }
 
 .button {
@@ -57,12 +49,10 @@ body {
   cursor: pointer;
   transition: all 0.7s ease;
 }
-
-.button.hover {
+.button:not([disabled]):hover {
   transform: scale(0.95);
 }
-
-.button.active {
+.button:not([disabled]):active {
   transform: scale(0.95);
   background-color: rgb(52, 139, 165);
   color: white;

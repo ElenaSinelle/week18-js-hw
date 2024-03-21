@@ -1,5 +1,8 @@
 'use strict'
 document.addEventListener('DOMContentLoaded', () => {
+// tests
+// localStorage.clear();
+// localStorage.setItem('tasksObj', JSON.stringify({"todo1": true, "todo2": false}));
 
 const input = document.querySelector('.todo-list__input');
 
@@ -12,15 +15,12 @@ clearListBtn.disabled = true;
 const list = document.querySelector('.todo-list__list');
 const result = document.querySelector('.todo-list__result');
 const noTasksMessage = document.querySelector('.todo-list__no-tasks-message');
+noTasksMessage.textContent = 'You have no tasks yet';
 
-let chboxes = [...list.querySelectorAll('.todo-list__chbox')];
+//-------------------------------------------------------------------------------
 
 //draw tasks according to local storage
-
-// localStorage.clear();
 let tasksObj = localStorage.getItem('tasksObj') ? JSON.parse(localStorage.getItem('tasksObj')) : {};
-
-// localStorage.setItem('tasksObj', JSON.stringify({"todo1": true, "todo2": false}));
 
 function drawSavedList(obj) {
   if (obj && Object.keys(obj).length !== 0) {
@@ -34,7 +34,6 @@ function drawSavedList(obj) {
       chbox.classList.add('todo-list__chbox');
       chbox.checked = obj[task];
       newLi.append(chbox);
-      chboxes.push(chbox);
 
       let label = document.createElement('label');
       label.classList.add('todo-list__chbox-label');
@@ -47,14 +46,13 @@ function drawSavedList(obj) {
   }
 }
 
-console.log(tasksObj);
 drawSavedList(tasksObj);
 
-// add new task and add it to local storage
+//-------------------------------------------------------------------------------
+
+// add new task and update local storage
 function addNewTask() {
-
   let task = input.value;
-
   let newLi = document.createElement('li');
   newLi.classList.add('todo-list__item');
   list.append(newLi);
@@ -64,7 +62,6 @@ function addNewTask() {
   chbox.classList.add('todo-list__chbox');
   chbox.checked = false;
   newLi.append(chbox);
-  chboxes.push(chbox);
 
   let label = document.createElement('label');
   label.classList.add('todo-list__chbox-label');
@@ -84,17 +81,21 @@ function refreshLocalStorage(task, chbox) {
 }
 
 function inputValidation() {
-  if (input.value.trim() === "") {
-    input.classList.add('invalid');
-    btn.disabled = true;
-  } else {
-    input.classList.remove('invalid');
-    btn.disabled = false;
-  }
+  let isValid = input.value.trim() !== "" ? true : false;
+  btn.disabled = !isValid;
 }
 
-input.addEventListener('input', inputValidation);
-btn.addEventListener('click', addNewTask);
+input.addEventListener('input', inputValidation); //input listener
+
+btn.addEventListener('click', function(){ // add to list button listener
+  addNewTask();
+  btn.disabled = true;
+})
+
+//-------------------------------------------------------------------------------
+
+// observe change of existing chboxes
+let chboxes = [...list.querySelectorAll('.todo-list__chbox')];
 
 chboxes.forEach(chbox => chbox.addEventListener('change', function(event) {
   let target = event.target;
@@ -102,61 +103,36 @@ chboxes.forEach(chbox => chbox.addEventListener('change', function(event) {
   refreshLocalStorage(task, target.checked);
 }))
 
+// observe change of last added chbox
+let callback =  function(mutationsList) {
+  let target = mutationsList[1].addedNodes[0];
+  // console.log(target);
+  if (target) {
+    target.addEventListener('change', function() {
+      let task = target.nextElementSibling.textContent;
+      refreshLocalStorage(task, target.checked);
+    })
+  }
+};
 
-// function addTask() {
-//   const task = input.value;
-//   const taskItem = `<input type="checkbox" name="task" class="todo-list__chbox">
-//                   <label class="todo-list__chbox-label">${task}</label>`;
-//   const newLi = document.createElement('li');
-//   newLi.classList.add('todo-list__item');
-//   newLi.innerHTML = taskItem;
-//   list.append(newLi);
-//   input.value = null;
-// }
+let observer = new MutationObserver(callback);
 
+let options = {
+  'childList': true,
+  'attributes':true,
+  'subtree': true
+};
 
-//
+observer.observe(list, options);
 
-// function addToTasks() {
-//   let newTaskItem = list.querySelector('.todo-list__chbox-label').textContent;
-//   let isChecked = list.querySelector('.todo-list__chbox').checked ? true : false;
-//   tasksObj[newTaskItem] = isChecked;
-//   console.log(tasksObj);
-//   localStorage.setItem('tasksObj', JSON.stringify(tasksObj));
-// }
-
-
-// btn.addEventListener('click', () => {
-//   addNewTask();
-
-// });
-
-
-
-
-
-// function doneEverything() {
-//   let itemsArr = [...list.getElementsByClassName('todo-list__item')];
-//   let doneResult = 0;
-
-//   itemsArr.forEach(element => element.classList.contains('done') ? doneResult++ : doneResult)
-
-//   if (doneResult === itemsArr.length) {
-//     result.textContent = "Great! Your have done everything for today!!!"
-//   } else {
-//     result.textContent = null;
-//   }
-// }
-
-
-
-
-// list.addEventListener('click', function(event) {
-//   if (event.target.classList.contains('todo-list__item')) {
-//     event.target.classList.toggle('done');
-//     event.target.classList.toggle('done');
-//   }
-//   doneEverything();
-// });
+// clear task-list
+clearListBtn.addEventListener('click', function(){
+  localStorage.clear();
+  document.querySelectorAll('.todo-list__item').forEach(item => item.remove());
+  tasksObj = {};
+  noTasksMessage.textContent = 'You have no tasks yet';
+  btn.disabled = true;
+  clearListBtn.disabled = true;
+})
 
 })

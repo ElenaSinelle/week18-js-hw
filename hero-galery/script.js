@@ -1,149 +1,133 @@
 'use strict'
-let comments = [];
+import {heros} from './heros.js';
 
-const button = document.querySelector('.inputs__button');
-const chatBody = document.querySelector('.display__body');
-const nameInput = document.querySelector('.inputs__name-input');
-const avatarInput = document.querySelector('.inputs__avatar-input');
-const commentInput = document.querySelector('.inputs__comment-input');
+document.addEventListener('DOMContentLoaded', () => {
+  //draw contents on page
+  const galleryContainer = document.querySelector('.gallery__container');
 
-const avatarArr = [
-  'assets/img/avatars/ava-0.png',
-  'assets/img/avatars/ava-1.png',
-  'assets/img/avatars/ava-2.png',
-  'assets/img/avatars/ava-3.png',
-  'assets/img/avatars/ava-4.png',
-  'assets/img/avatars/ava-5.png',
-  'assets/img/avatars/ava-6.png',
-];
+  function drawContents(obj) {
+    let div = document.createElement('div');
+    div.className = 'gallery__item item';
+    galleryContainer.append(div);
 
-//creation of new comment layout
-function createComment(commentData) {
-  const commentBlock = document.createElement('div');
-  commentBlock.classList.add('comment');
-  chatBody.prepend(commentBlock);
-  commentBlock.innerHTML = `
-  <div class="comment__header">
-    <div class="comment__avatar-container">
-      <img class="comment__avatar" src="${commentData.avatar}" alt="аватар">
-      <h4 class="comment__name">${commentData.name}</h4>
+    const savedRating = localStorage.getItem(`${obj.name}`) ? localStorage.getItem(`${obj.name}`) : 0;
+
+    div.innerHTML = `
+    <h3 class="item__title name">${obj.name}</h3>
+    <p class="item__paragraph">Вселенная: <span class="universe">${obj.universe}</span></p>
+    <p class="item__paragraph">Альтер-эго: <span class="alterego">${obj.alterego}</span></p>
+    <p class="item__paragraph">Род деятельности: <span  class="occupation">${obj.occupation}</span></p>
+    <p class="item__paragraph">Друзья: <span class="friends">${obj.friends}</span></p>
+    <p class="item__paragraph">Суперсилы: <span class="superpowers">${obj.superpowers}</span></p>
+    <div class="item__img-container">
+      <img class="item__img url" src="${obj.url}">
     </div>
-
-    <div class="comment__date">${commentData.date}</div>
-  </div>
-
-  <div class="comment__body">${commentData.comment}</div>
-`;
-}
-
-//name
-function createName() {
-  if(nameInput.value) {
-    return nameInput.value.trim()
-      .toLowerCase()
-      .split(/ /)
-      .filter(item => item !== '')
-      .map(item => item = item[0]
-      .toUpperCase() + item.slice(1))
-      .join(' ');
-
-  } else {
-   return 'Username';
+    <div class="item__rating rating">
+      <div class="rating__body">
+        <div class="rating__active"></div>
+        <div class="rating__items">
+          <input type="radio" class="rating__item" value="1" name="rating">
+          <input type="radio" class="rating__item" value="2" name="rating">
+          <input type="radio" class="rating__item" value="3" name="rating">
+          <input type="radio" class="rating__item" value="4" name="rating">
+          <input type="radio" class="rating__item" value="5" name="rating">
+        </div>
+      </div>
+      <div class="rating__value">${savedRating}</div>
+    </div>
+    <button class="item__btn">Подробнее</button>
+    <div class="item__popup">Информация: <span class="info">${obj.info}</span></div>`;
   }
-}
 
-//avatar
-function createAvatar() {
-  // const regexp = /^https?:\/\/.+(.png|.jpg|.jpeg|.svg)$/;
-  const regexp = /^https?:.+$/;
-  const inputSrc = (avatarInput.value).trim();
+  heros.forEach(obj => drawContents(obj));
 
-  if (regexp.test(inputSrc)) {
-    let img = new Image();
-    img.src = inputSrc;
+  // ----------------------------------------------------------------------
 
-    if (img.width !== 0) {
-      return inputSrc;
-    } else {
-      return getAvatar();
+  //activate / deactivate popup
+  const btns = galleryContainer.querySelectorAll('.item__btn');
+
+  btns.forEach(btn => btn.addEventListener('click', () => {
+    const popup = btn.nextElementSibling;
+    popup.classList.toggle('active');
+  }))
+
+  const popups = galleryContainer.querySelectorAll('.item__popup');
+  popups.forEach(popup => popup.addEventListener('click', () => {
+    popup.classList.remove('active');
+  }))
+
+  // ----------------------------------------------------------------------
+
+  // star-ranking
+  const ratings = document.querySelectorAll('.rating');
+
+  if(ratings.length > 0) {
+    initRatings();
+  }
+
+  //main rating initiation function
+  function initRatings() {
+    let ratingActive; // active stars
+    let ratingValue; // value in paragraph near the stars
+
+    for (let i = 0; i < ratings.length; i++) {
+      const rating = ratings[i];
+      initRating(rating); // initialize every rating on page
     }
 
-  } else {
-    return getAvatar();
+    function initRating(rating) {
+      initVariables(rating);
+      setRatingActiveWidth();
+      if(rating.classList.contains('rating')) {
+        setRating(rating);
+      }
+    }
+
+    // function that sets variables for every rating
+    function initVariables(rating) {
+      ratingActive = rating.querySelector('.rating__active');
+      ratingValue = rating.querySelector('.rating__value');
+    }
+
+    // function that rates (rating.value on default)
+    function setRatingActiveWidth (i = ratingValue.innerHTML) {
+      const ratingActiveWidth = i / 0.05;
+      ratingActive.style.width = `${ratingActiveWidth}%`;
+    }
+
+    // function that allows set rating by hand
+    function setRating(rating) {
+      const ratingItems = rating.querySelectorAll('.rating__item'); // all ratings on page
+
+      for (let i = 0; i < ratingItems.length; i++) {
+        const ratingItem = ratingItems[i];
+        const heroName = ratingItem.closest('.item').firstElementChild.textContent;
+
+        // possibility to change rating with moseover + update local storage
+        ratingItem.addEventListener('mouseenter', function() {
+          initVariables(rating); // update variables ratingActive and ratingValue for every item
+          setRatingActiveWidth(ratingItem.value); // update current value
+          const ratingActiveWidth = ratingActive.style.width;
+          const ratingCurrentValue = parseInt(ratingActiveWidth) * 0.05;
+          ratingValue.textContent = ratingCurrentValue;
+          localStorage.setItem(heroName, ratingCurrentValue);
+        });
+
+        // possibility to change rating on mouseleave (not necessary in my case)
+        // ratingItem.addEventListener('mouseleave', function() {
+        //   setRatingActiveWidth(); // update current value
+        // });
+
+        // set rating on click, not very necessary in my case but let it be
+        ratingItem.addEventListener('click', function() {
+          initVariables(rating);
+          setRatingActiveWidth();
+          const ratingActiveWidth = ratingActive.style.width;
+          const ratingCurrentValue = parseInt(ratingActiveWidth) * 0.05;
+          ratingValue.textContent = ratingCurrentValue;
+          localStorage.setItem(heroName, ratingValue.textContent);
+        });
+      }
+    }
   }
-}
-
-function getAvatar() {
-  let n = Math.round(Math.random()*(avatarArr.length - 1));
-  return avatarArr[n];
-}
-
-//date
-function createCommentDate() {
-  const date = new Date();
-
-  const days = ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'];
-  const months = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
-
-  const dayOfWeek = days[date.getDay()];
-  const day = date.getDate();
-  const month = months[date.getMonth()];
-  const year = date.getFullYear();
-  const hours =  String(date.getHours()).length === 1 ? String(date.getHours()).padStart(2, '0') : String(date.getHours());
-  const minutes = String(date.getMinutes()).length === 1 ? String(date.getMinutes()).padStart(2, '0') : String(date.getMinutes());
-  const seconds =  String(date.getSeconds()).length === 1 ? String(date.getSeconds()).padStart(2, '0') : String(date.getSeconds());
-
-  return `${dayOfWeek}, ${day} ${month} ${year} в ${hours}:${minutes}:${seconds}`;
-}
-
-//comment
-function createCommentText() {
-  return checkSpam(commentInput.value);
-}
-
-function checkSpam(str) {
-  const regexp = /viagra|xxx/ig;
-  let strChecked;
-  if (regexp.test(str)) {
-    strChecked = str.replace(regexp, '***');
-  } else {
-    strChecked = str;
-  }
-  return strChecked;
-}
-
-// adding of a new comment
-function addCommentToPage() {
-  const name = createName();
-  const avatar = createAvatar();
-  const commentText = createCommentText();
-  const date = createCommentDate();
-
-  const commentData = { name, avatar, comment: commentText, date };
-  comments.push(commentData);
-
-  // draw comment on page
-  createComment(commentData);
-
-  // clear inputs
-  nameInput.value = '';
-  avatarInput.value = '';
-  commentInput.value = '';
-}
-
-
-//event listener for adding comment
-button.addEventListener('click', addCommentToPage);
-
-
-//hide name field
-const radios = document.querySelector('.inputs__radio-name-container');
-radios.addEventListener('click', function(event) {
-  const nameContainer = document.querySelector('.inputs__name-container');
-
-  if (event.target.id === 'no') {
-    nameContainer.style.display = 'none';
-    nameInput.value = '';
-  }
-  if (event.target.id === 'yes') nameContainer.style.display = '';
 })

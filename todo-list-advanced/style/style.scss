@@ -54,6 +54,7 @@ body {
   cursor: pointer;
   transition: all 0.7s ease;
 
+  //for script
   &:not([disabled]):hover {
     transform: scale(0.95);
   }
@@ -64,3 +65,24 @@ body {
     color: white;
   }
 }
+
+// .todo-list__clear,
+// .todo-list__button {
+//   &:disabled {
+//     opacity: 0.5;
+//     cursor: none;
+//   }
+
+//   &:not([disabled]):hover {
+//     transform: scale(0.95);
+//   }
+
+//   &:not([disabled]):active {
+//     transform: scale(0.95);
+//     background-color: rgb(52, 139, 165);
+//     color: white;
+//   }
+
+
+// }
+  // for cat-script

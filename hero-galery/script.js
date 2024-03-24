@@ -104,28 +104,37 @@ document.addEventListener('DOMContentLoaded', () => {
         const heroName = ratingItem.closest('.item').firstElementChild.textContent;
 
         // possibility to change rating with moseover + update local storage
-        ratingItem.addEventListener('mouseenter', function() {
-          initVariables(rating); // update variables ratingActive and ratingValue for every item
-          setRatingActiveWidth(ratingItem.value); // update current value
-          const ratingActiveWidth = ratingActive.style.width;
-          const ratingCurrentValue = parseInt(ratingActiveWidth) * 0.05;
-          ratingValue.textContent = ratingCurrentValue;
-          localStorage.setItem(heroName, ratingCurrentValue);
-        });
+        // ratingItem.addEventListener('mouseenter', function() {
+        //   initVariables(rating); // update variables ratingActive and ratingValue for every item
+        //   setRatingActiveWidth(ratingItem.value); // update current value
+        //   const ratingActiveWidth = ratingActive.style.width;
+        //   const ratingCurrentValue = parseInt(ratingActiveWidth) * 0.05;
+        //   ratingValue.textContent = ratingCurrentValue;
+        //   localStorage.setItem(heroName, ratingCurrentValue);
+        // });
 
-        // possibility to change rating on mouseleave (not necessary in my case)
+        // possibility to change rating on mouseleave
         // ratingItem.addEventListener('mouseleave', function() {
         //   setRatingActiveWidth(); // update current value
         // });
 
-        // set rating on click, not very necessary in my case but let it be
+        // set rating on click + update local storage
         ratingItem.addEventListener('click', function() {
           initVariables(rating);
-          setRatingActiveWidth();
           const ratingActiveWidth = ratingActive.style.width;
-          const ratingCurrentValue = parseInt(ratingActiveWidth) * 0.05;
-          ratingValue.textContent = ratingCurrentValue;
-          localStorage.setItem(heroName, ratingValue.textContent);
+          const ratingCurrentValue = parseInt(ratingActiveWidth) * 0.05; // value of already activated inputs
+          const newRatingValue = +ratingItem.value; // value of input clicked
+
+          // if the rating "1" is clicked again, reset the rating to 0
+          if (ratingCurrentValue === 1 && ratingCurrentValue === newRatingValue) {
+            ratingValue.textContent = 0;
+            ratingActive.style.width = '0%'; // reset active rating width
+            localStorage.removeItem(heroName);
+          } else {
+            setRatingActiveWidth(newRatingValue);
+            ratingValue.textContent = newRatingValue;
+            localStorage.setItem(heroName, newRatingValue);
+          }
         });
       }
     }

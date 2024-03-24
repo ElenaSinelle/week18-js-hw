@@ -13,7 +13,6 @@ const clearListBtn = document.querySelector('.todo-list__clear');
 clearListBtn.disabled = true;
 
 const list = document.querySelector('.todo-list__list');
-const result = document.querySelector('.todo-list__result');
 const noTasksMessage = document.querySelector('.todo-list__no-tasks-message');
 noTasksMessage.textContent = 'You have no tasks yet';
 
